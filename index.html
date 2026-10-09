@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b0b0c">
+    <meta name="description" content="A thoughtful night-travel check-in concept for students and women. Plan your route, set an arrival time, and choose who to contact if plans change.">
+    <title>Nightline — Get there together</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            color-scheme: dark;
+            --black: #0b0b0c;
+            --panel: #141416;
+            --paper: #f4f2ef;
+            --white: #faf9f7;
+            --red: #f13b45;
+            --red-dark: #c8212b;
+            --muted: #9b9998;
+            --line: #303033;
+            --ink: #171719;
+            --soft-line: #d9d6d2;
+            font-family: "Manrope", "Avenir Next", sans-serif;
+            color: var(--white);
+            background: var(--black);
+            scroll-behavior: smooth;
+        }
+
+        * { box-sizing: border-box; }
+        body { min-width: 320px; margin: 0; }
+        a { color: inherit; }
+        button, input { font: inherit; }
+        button, a { -webkit-tap-highlight-color: transparent; }
+        button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--red); outline-offset: 4px; }
+        .mono { font-family: "DM Mono", monospace; }
+
+        .topbar {
+            position: sticky;
+            z-index: 10;
+            top: 0;
+            display: flex;
+            min-height: 72px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 22px;
+            padding: 0 clamp(22px, 6vw, 92px);
+            border-bottom: 1px solid rgb(255 255 255 / 9%);
+            background: rgb(11 11 12 / 94%);
+            backdrop-filter: blur(16px);
+        }
+
+        .brand { display: inline-flex; align-items: center; gap: 11px; text-decoration: none; }
+        .brand-symbol { display: grid; width: 31px; aspect-ratio: 1; place-items: center; border: 2px solid var(--red); border-radius: 50%; color: var(--red); font-size: 18px; font-weight: 800; line-height: 1; }
+        .brand-name { font-size: 14px; font-weight: 800; letter-spacing: 0.13em; }
+        .nav { display: flex; align-items: center; gap: clamp(18px, 3.2vw, 44px); }
+        .nav a { color: #ceccca; font-size: 12px; font-weight: 700; text-decoration: none; transition: color 160ms ease; }
+        .nav a:hover { color: var(--red); }
+        .top-cta { display: inline-flex; align-items: center; justify-content: center; min-height: 38px; padding: 0 15px; border: 1px solid #555154; border-radius: 2px; font-size: 11px; font-weight: 800; text-decoration: none; transition: background 160ms ease, border-color 160ms ease; }
+        .top-cta:hover { border-color: var(--red); background: var(--red); }
+
+        .hero {
+            position: relative;
+            display: grid;
+            min-height: 565px;
+            grid-template-columns: minmax(0, 1.06fr) minmax(330px, 0.94fr);
+            align-items: center;
+            gap: clamp(35px, 8vw, 120px);
+            padding: 78px clamp(22px, 10vw, 150px) 88px;
+            overflow: hidden;
+            background: #101012;
+        }
+
+        .hero::before { position: absolute; inset: 0 0 0 50%; background: linear-gradient(90deg, #101012 0%, rgb(16 16 18 / 66%) 30%, rgb(16 16 18 / 13%) 100%), url("https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1500&q=85") center 38% / cover; content: ""; opacity: 0.48; }
+        .hero::after { position: absolute; right: 12%; bottom: -180px; width: 440px; height: 440px; border: 1px solid rgb(241 59 69 / 24%); border-radius: 50%; box-shadow: 0 0 0 52px rgb(241 59 69 / 4%), 0 0 0 105px rgb(241 59 69 / 3%); content: ""; pointer-events: none; }
+        .hero-copy, .trip-card { position: relative; z-index: 1; }
+        .overline { display: flex; align-items: center; gap: 10px; margin: 0 0 23px; color: #d8d6d4; font-size: 10px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; }
+        .overline::before { width: 23px; height: 2px; background: var(--red); content: ""; }
+        h1, h2, h3, p { margin-top: 0; }
+        h1 { max-width: 610px; margin-bottom: 22px; font-size: clamp(43px, 6.2vw, 78px); font-weight: 600; letter-spacing: 0; line-height: 0.99; }
+        h1 span { color: var(--red); }
+        .hero-description { max-width: 475px; margin: 0 0 30px; color: #c2bfbd; font-size: 14px; line-height: 1.8; }
+        .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; }
+        .button { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: 10px; padding: 0 19px; border: 1px solid transparent; border-radius: 2px; cursor: pointer; font-size: 12px; font-weight: 800; text-decoration: none; transition: background 160ms ease, border-color 160ms ease, transform 160ms ease; }
+        .button:hover { transform: translateY(-1px); }
+        .button-red { background: var(--red); color: white; }
+        .button-red:hover { background: var(--red-dark); }
+        .button-outline { border-color: #5a5558; background: transparent; color: white; }
+        .button-outline:hover { border-color: var(--red); }
+        .hero-note { color: #aaa7a5; font-size: 10px; }
+
+        .trip-card { width: 100%; max-width: 400px; justify-self: end; padding: 25px; border: 1px solid rgb(255 255 255 / 16%); background: rgb(17 17 19 / 89%); box-shadow: 0 24px 80px rgb(0 0 0 / 35%); backdrop-filter: blur(10px); }
+        .trip-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; margin-bottom: 22px; }
+        .trip-card-top h2 { margin: 0 0 5px; font-size: 16px; font-weight: 800; }
+        .trip-card-top p { margin: 0; color: var(--muted); font-size: 10px; }
+        .live-tag { display: inline-flex; align-items: center; gap: 7px; padding: 6px 8px; border: 1px solid rgb(241 59 69 / 38%); color: #ff7a80; font-size: 9px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+        .live-tag::before { width: 6px; height: 6px; border-radius: 50%; background: var(--red); content: ""; }
+        .route-line { display: grid; grid-template-columns: 18px 1fr; gap: 11px; margin-bottom: 20px; }
+        .route-dots { display: flex; flex-direction: column; align-items: center; padding-top: 5px; }
+        .route-dots i:first-child { width: 9px; height: 9px; border: 2px solid #f6f5f3; border-radius: 50%; }
+        .route-dots i:nth-child(2) { width: 1px; height: 26px; background: #5f5b5c; }
+        .route-dots i:last-child { width: 9px; height: 9px; background: var(--red); }
+        .route-place { display: flex; min-height: 34px; align-items: flex-start; justify-content: space-between; gap: 10px; color: white; font-size: 11px; font-weight: 700; }
+        .route-place span { color: var(--muted); font-size: 10px; font-weight: 500; }
+        .trip-rule { height: 1px; margin: 0 0 15px; border: 0; background: #343437; }
+        .trip-meta { display: flex; align-items: center; justify-content: space-between; gap: 15px; color: var(--muted); font-size: 10px; }
+        .trip-meta strong { color: white; font-size: 11px; }
+
+        .page-section { padding: 84px clamp(22px, 10vw, 150px); scroll-margin-top: 72px; }
+        .section-paper { background: var(--paper); color: var(--ink); }
+        .section-dark { background: var(--black); }
+        .section-kicker { margin: 0 0 14px; color: var(--red); font-size: 10px; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; }
+        .section-heading { max-width: 680px; margin: 0 0 13px; font-size: clamp(30px, 4.2vw, 49px); font-weight: 600; letter-spacing: 0; line-height: 1.08; }
+        .section-lede { max-width: 640px; margin: 0; color: #777371; font-size: 13px; line-height: 1.8; }
+        .section-paper .section-lede { color: #66615f; }
+        .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: 42px; border-top: 1px solid var(--soft-line); }
+        .step { padding: 23px 25px 0 0; }
+        .step + .step { padding-left: 24px; border-left: 1px solid var(--soft-line); }
+        .step-number { display: block; margin-bottom: 26px; color: var(--red); font-family: "DM Mono", monospace; font-size: 11px; }
+        .step h3 { margin-bottom: 9px; font-size: 14px; font-weight: 800; }
+        .step p { max-width: 280px; margin: 0; color: #66615f; font-size: 11px; line-height: 1.8; }
+
+        .planner-layout { display: grid; grid-template-columns: minmax(0, 1.13fr) minmax(270px, 0.87fr); gap: clamp(32px, 7vw, 90px); align-items: start; margin-top: 39px; }
+        .plan-form { display: grid; grid-template-columns: 1fr 1fr; gap: 17px; padding: 25px; border: 1px solid #d8d4d1; background: #fff; }
+        .field { display: grid; gap: 7px; }
+        .field-full { grid-column: 1 / -1; }
+        .field label { color: #56504e; font-size: 10px; font-weight: 800; }
+        .field input { width: 100%; min-height: 44px; padding: 0 12px; border: 1px solid #d8d4d1; border-radius: 1px; background: #fff; color: var(--ink); font-size: 12px; }
+        .field input::placeholder { color: #98928f; }
+        .field-note { margin: 0; color: #77716e; font-size: 9px; line-height: 1.6; }
+        .form-footer { grid-column: 1 / -1; display: grid; gap: 12px; margin-top: 4px; }
+        .form-footer .button { width: 100%; }
+        .consent-line { display: flex; align-items: flex-start; gap: 9px; color: #6a6562; font-size: 10px; line-height: 1.6; }
+        .consent-line input { margin: 2px 0 0; accent-color: var(--red); }
+        .form-message { display: none; grid-column: 1 / -1; margin: 0; color: var(--red-dark); font-size: 11px; font-weight: 700; }
+        .form-message.visible { display: block; }
+
+        .safety-panel { padding: 24px 24px 20px; background: var(--black); color: var(--white); }
+        .safety-panel h3 { margin: 0 0 18px; font-size: 13px; }
+        .safety-step { position: relative; display: grid; grid-template-columns: 17px 1fr; gap: 11px; padding-bottom: 20px; }
+        .safety-step:not(:last-of-type)::after { position: absolute; top: 15px; bottom: 0; left: 7px; width: 1px; background: #454144; content: ""; }
+        .safety-step:last-of-type { padding-bottom: 0; }
+        .safety-marker { position: relative; z-index: 1; width: 15px; height: 15px; border: 1px solid #777174; border-radius: 50%; background: var(--black); }
+        .safety-step:first-of-type .safety-marker { border-color: var(--red); background: var(--red); box-shadow: 0 0 0 4px rgb(241 59 69 / 14%); }
+        .safety-step strong { display: block; margin-bottom: 4px; font-size: 10px; }
+        .safety-step p { margin: 0; color: #a5a0a0; font-size: 9px; line-height: 1.6; }
+        .safety-warning { margin: 22px 0 0; padding-top: 14px; border-top: 1px solid #353235; color: #a5a0a0; font-size: 9px; line-height: 1.7; }
+
+        .active-trip { display: none; margin-top: 22px; padding: 21px; border-left: 3px solid var(--red); background: #171719; color: white; }
+        .active-trip.visible { display: block; }
+        .active-trip h3 { margin: 0 0 7px; font-size: 14px; }
+        .active-trip p { margin: 0 0 15px; color: #b9b5b4; font-size: 10px; line-height: 1.7; }
+        .active-trip-actions { display: flex; flex-wrap: wrap; gap: 9px; }
+        .active-trip .button { min-height: 38px; padding: 0 12px; font-size: 10px; }
+        .button-light { border-color: #666166; background: transparent; color: white; }
+        .button-light:hover { border-color: white; }
+        .trip-alert { display: none; margin-top: 14px; padding: 12px; border: 1px solid #4d4547; color: #eee; font-size: 10px; line-height: 1.7; }
+        .trip-alert.visible { display: block; }
+        .trip-alert strong { color: #ff777e; }
+
+        .privacy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; margin-top: 35px; }
+        .privacy-copy { color: #c0bcbb; font-size: 12px; line-height: 1.9; }
+        .privacy-copy p:last-child { margin-bottom: 0; }
+        .privacy-callout { padding: 24px; border: 1px solid #383638; border-top: 2px solid var(--red); background: #141416; }
+        .privacy-callout h3 { margin: 0 0 9px; font-size: 12px; }
+        .privacy-callout p { margin: 0; color: #aaa6a5; font-size: 10px; line-height: 1.8; }
+        .footer { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 24px clamp(22px, 6vw, 92px); border-top: 1px solid #28282a; color: #92908f; font-size: 9px; }
+        .footer p { margin: 0; }
+
+        @media (max-width: 850px) {
+            .nav { gap: 16px; }
+            .nav a { font-size: 11px; }
+            .hero { grid-template-columns: 1fr 0.85fr; gap: 28px; padding-right: 7%; padding-left: 7%; }
+            .hero::before { left: 42%; }
+            .page-section { padding-right: 7%; padding-left: 7%; }
+        }
+
+        @media (max-width: 650px) {
+            .topbar { min-height: 62px; flex-wrap: wrap; gap: 0 12px; padding: 0 18px; }
+            .brand { min-height: 60px; }
+            .brand-name { font-size: 12px; }
+            .top-cta { min-height: 34px; margin-left: auto; padding: 0 10px; font-size: 10px; }
+            .nav { order: 3; width: 100%; justify-content: space-between; gap: 8px; padding: 0 0 12px; }
+            .nav a { font-size: 10px; }
+            .hero { min-height: unset; grid-template-columns: 1fr; gap: 34px; padding: 66px 22px 44px; }
+            .hero::before { inset: 0; background-image: linear-gradient(90deg, rgb(16 16 18 / 91%), rgb(16 16 18 / 68%)), url("https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1000&q=80"); background-position: center 35%; opacity: 0.5; }
+            .hero::after { right: -175px; bottom: -175px; }
+            h1 { max-width: 470px; font-size: clamp(45px, 13vw, 67px); }
+            .hero-description { font-size: 13px; }
+            .trip-card { max-width: none; justify-self: stretch; padding: 20px; }
+            .page-section { padding: 65px 22px; scroll-margin-top: 105px; }
+            .steps { grid-template-columns: 1fr; margin-top: 30px; }
+            .step, .step + .step { padding: 17px 0; border-left: 0; border-bottom: 1px solid var(--soft-line); }
+            .step-number { margin-bottom: 12px; }
+            .planner-layout { grid-template-columns: 1fr; gap: 25px; margin-top: 28px; }
+            .plan-form { gap: 13px; padding: 17px; }
+            .privacy-grid { grid-template-columns: 1fr; gap: 20px; }
+            .footer { align-items: flex-start; flex-direction: column; padding: 20px 22px; }
+        }
+
+        @media (max-width: 390px) {
+            .nav a { font-size: 9px; }
+            .plan-form { grid-template-columns: 1fr; }
+            .field-full, .form-footer, .form-message { grid-column: auto; }
+            .hero-actions { gap: 13px; }
+            .button { padding: 0 13px; font-size: 11px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="#home" aria-label="Nightline home">
+            <span class="brand-symbol" aria-hidden="true">n</span>
+            <span class="brand-name">NIGHTLINE</span>
+        </a>
+        <nav class="nav" aria-label="Main navigation">
+            <a href="#how-it-works">How it works</a>
+            <a href="#plan-a-trip">Plan a trip</a>
+            <a href="#your-privacy">Privacy</a>
+        </nav>
+        <a class="top-cta" href="#plan-a-trip">Start a check-in <span aria-hidden="true">&nbsp;↗</span></a>
+    </header>
+
+    <main>
+        <section class="hero" id="home" aria-labelledby="hero-title">
+            <div class="hero-copy">
+                <p class="overline">A little more peace of mind</p>
+                <h1 id="hero-title">Get there.<br>We’ll <span>check in.</span></h1>
+                <p class="hero-description">A simple night-travel check-in for students and women. Share your plan with someone you trust, set an arrival time, and keep your next step clear.</p>
+                <div class="hero-actions">
+                    <a class="button button-red" href="#plan-a-trip">Plan your trip <span aria-hidden="true">↗</span></a>
+                    <span class="hero-note">Your route. Your people. Your choice.</span>
+                </div>
+            </div>
+            <aside class="trip-card" aria-label="Example check-in plan">
+                <div class="trip-card-top">
+                    <div><h2>Your check-in plan</h2><p>A clear plan for the way home</p></div>
+                    <span class="live-tag">Example</span>
+                </div>
+                <div class="route-line" aria-label="Route from Campus library to Home">
+                    <div class="route-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+                    <div>
+                        <div class="route-place">Campus library <span>Leaving from</span></div>
+                        <div class="route-place">Home <span>Check in by 10:40 PM</span></div>
+                    </div>
+                </div>
+                <hr class="trip-rule">
+                <div class="trip-meta"><span>Trusted contact</span><strong>Chosen by you</strong></div>
+            </aside>
+        </section>
+
+        <section class="page-section section-paper" id="how-it-works" aria-labelledby="how-title">
+            <p class="section-kicker">Simple by design</p>
+            <h2 class="section-heading" id="how-title">A check-in plan that puts you in control.</h2>
+            <p class="section-lede">Set an arrival time and decide who should hear from you. If you miss it, the next steps are clear and consent-led.</p>
+            <div class="steps">
+                <article class="step"><span class="step-number">01 / PLAN</span><h3>Set your route</h3><p>Add where you’re going, when you expect to arrive, and a trusted contact.</p></article>
+                <article class="step"><span class="step-number">02 / CHECK IN</span><h3>Let them know</h3><p>Check in when you arrive. A real service could remind you before your deadline.</p></article>
+                <article class="step"><span class="step-number">03 / NEXT STEP</span><h3>Choose what happens</h3><p>If plans change, contact your person first. Share location or seek help only with your explicit choice.</p></article>
+            </div>
+        </section>
+
+        <section class="page-section section-paper" id="plan-a-trip" aria-labelledby="plan-title" style="padding-top: 25px">
+            <p class="section-kicker">Start with a plan</p>
+            <h2 class="section-heading" id="plan-title">Where are you headed tonight?</h2>
+            <p class="section-lede">Create a local demo check-in. No contact details or location leave this page.</p>
+            <div class="planner-layout">
+                <div>
+                    <form class="plan-form" id="trip-form">
+                        <div class="field"><label for="origin">Leaving from</label><input id="origin" name="origin" placeholder="Campus library" required maxlength="70"></div>
+                        <div class="field"><label for="destination">Going to</label><input id="destination" name="destination" placeholder="Home or destination" required maxlength="70"></div>
+                        <div class="field"><label for="arrival">Expected arrival</label><input id="arrival" name="arrival" type="datetime-local" required></div>
+                        <div class="field"><label for="contact-name">Trusted contact</label><input id="contact-name" name="contactName" placeholder="Name of someone you trust" required maxlength="70"></div>
+                        <div class="field field-full"><label for="contact-phone">Contact phone number</label><input id="contact-phone" name="contactPhone" type="tel" autocomplete="tel" placeholder="Only stored in this demo page" required maxlength="30"><p class="field-note">In a real service, their number would be used only with your permission.</p></div>
+                        <p class="form-message" id="form-message" role="alert"></p>
+                        <div class="form-footer">
+                            <label class="consent-line"><input id="trip-consent" type="checkbox" required><span>I have permission to list this person as my trusted contact. This demo will not send them a message.</span></label>
+                            <button class="button button-red" type="submit">Create check-in plan <span aria-hidden="true">↗</span></button>
+                        </div>
+                    </form>
+                    <div class="active-trip" id="active-trip" aria-live="polite">
+                        <h3 id="active-title">Your check-in plan is ready</h3>
+                        <p id="active-summary"></p>
+                        <div class="active-trip-actions">
+                            <button class="button button-red" id="safe-button" type="button">I’ve arrived safely</button>
+                            <button class="button button-light" id="missed-button" type="button">Preview missed check-in</button>
+                        </div>
+                        <div class="trip-alert" id="trip-alert" role="status"></div>
+                    </div>
+                </div>
+                <aside class="safety-panel" aria-label="What happens if you miss a check-in">
+                    <h3>If a check-in is missed</h3>
+                    <div class="safety-step"><span class="safety-marker" aria-hidden="true"></span><div><strong>First, a reminder to you</strong><p>A real service should allow a short grace period and a quick “I’m okay” reply.</p></div></div>
+                    <div class="safety-step"><span class="safety-marker" aria-hidden="true"></span><div><strong>Then, your trusted contact</strong><p>They can check in with you. This page only previews the alert; it sends nothing.</p></div></div>
+                    <div class="safety-step"><span class="safety-marker" aria-hidden="true"></span><div><strong>Emergency help is your choice</strong><p>Share location or call local emergency services when you choose. No automatic police dispatch.</p></div></div>
+                    <p class="safety-warning">Nightline is a front-end prototype, not an emergency service. If you’re in immediate danger, call your local emergency number.</p>
+                </aside>
+            </div>
+        </section>
+
+        <section class="page-section section-dark" id="your-privacy" aria-labelledby="privacy-title">
+            <p class="section-kicker">Safety includes privacy</p>
+            <h2 class="section-heading" id="privacy-title">Your face and location stay yours.</h2>
+            <div class="privacy-grid">
+                <div class="privacy-copy">
+                    <p>Face recognition is not enabled in this prototype. A production version should use a properly secured, opt-in identity provider and explain exactly what biometric data is processed, where it is stored, and how to delete it. A check-in should never depend on facial recognition.</p>
+                    <p>This page does not request camera or location access, store trip data, send SMS, or contact family or emergency services. The interactive check-in is a local demonstration only.</p>
+                </div>
+                <aside class="privacy-callout">
+                    <h3>When a real alert is needed</h3>
+                    <p>Any location sharing should be a deliberate choice, visible to you, and sent only to a contact you selected or an emergency service you explicitly request. Missed check-ins alone should never trigger an automatic police dispatch.</p>
+                </aside>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p><strong>NIGHTLINE</strong> &nbsp; A night-travel check-in concept</p>
+        <p>Prototype only · Not monitored · Not an emergency service</p>
+    </footer>
+
+    <script>
+        const tripForm = document.querySelector("#trip-form");
+        const arrivalInput = document.querySelector("#arrival");
+        const activeTrip = document.querySelector("#active-trip");
+        const alertBox = document.querySelector("#trip-alert");
+        const formMessage = document.querySelector("#form-message");
+        const safeButton = document.querySelector("#safe-button");
+        const missedButton = document.querySelector("#missed-button");
+        const contactNameInput = document.querySelector("#contact-name");
+
+        function setArrivalBounds() {
+            const now = new Date();
+            const soon = new Date(now.getTime() + 60 * 60 * 1000);
+            const localDateTime = (date) => new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+            arrivalInput.min = localDateTime(now);
+            arrivalInput.value = localDateTime(soon);
+        }
+
+        function showAlert(message) {
+            alertBox.textContent = message;
+            alertBox.classList.add("visible");
+        }
+
+        setArrivalBounds();
+
+        tripForm.addEventListener("submit", (event) => {
+            event.preventDefault();
+            formMessage.classList.remove("visible");
+            if (!tripForm.reportValidity()) return;
+
+            const trip = new FormData(tripForm);
+            const arrival = new Date(trip.get("arrival"));
+            if (arrival <= new Date()) {
+                formMessage.textContent = "Choose an arrival time in the future.";
+                formMessage.classList.add("visible");
+                return;
+            }
+
+            document.querySelector("#active-title").textContent = "Your check-in plan is ready";
+            document.querySelector("#active-summary").textContent = `Route: ${trip.get("origin")} to ${trip.get("destination")}. Check in by ${arrival.toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}. Your chosen contact is ${trip.get("contactName")}. No message will be sent in this demo.`;
+            contactNameInput.dataset.contactName = trip.get("contactName");
+            activeTrip.classList.add("visible");
+            alertBox.classList.remove("visible");
+            activeTrip.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+
+        safeButton.addEventListener("click", () => {
+            document.querySelector("#active-title").textContent = "Check-in complete";
+            document.querySelector("#active-summary").textContent = "Glad you made it. This confirmation stayed on this page; no contact was notified.";
+            alertBox.classList.remove("visible");
+        });
+
+        missedButton.addEventListener("click", () => {
+            const contactName = contactNameInput.dataset.contactName || "your trusted contact";
+            showAlert(`Demo only: A check-in reminder for you would come first. Next, this page would prepare a message for ${contactName}. Nothing was sent. For immediate danger, contact local emergency services directly.`);
+        });
+    </script>
+</body>
+</html>
